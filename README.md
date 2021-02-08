@@ -1,2 +1,4 @@
 # My class repo
-This si my repo for TA class
+This is my repo for TA class
+
+We were able to push a new commit.
