@@ -23,6 +23,23 @@ int printroster(roster r) {
     return 0;
 }
 
+// Return integer
+// > 0 if left > right
+// < 0 if left < right
+// == 0 if left == right
+int rostercmp(const void *left, const void *right) {
+
+    const roster *a = (const roster*) left;
+    const roster *b = (const roster*) right;
+
+    //printroster(*a);
+    //printroster(*b);
+    //printf("\t%d - %d = %d\n", (*a).number, (*b).number, (*a).number - (*b).number);
+    
+
+    return - (*a).number + (*b).number;
+}
+
 
 int main(int argc, char **argv, char **envp) {
 
@@ -139,20 +156,89 @@ int main(int argc, char **argv, char **envp) {
     org[2].number = 0;
     strncpy(org[2].team, "Marlins", MAX_ROSTER);
 
-    //printroster(org[2]);
+    org[3].number = 9;
+    strncpy(org[3].team, "Sooners", MAX_ROSTER);
+
+    org[4].number = 44;
+    strncpy(org[4].team, "Thunder", MAX_ROSTER);
+
+
+    printf("-------------------\n");
+    // Print all Org
+    for (i = 0; i < 5; ++i) {
+        printroster(org[i]);
+    }
+    
+    printf("-------------------\n");
+    // Sort all org
+    qsort(org, 5, sizeof(roster), rostercmp);
+    
+    // Print all org
+    for (i = 0; i < 5; ++i) {
+        printroster(org[i]);
+    }
+    printf("-------------------\n");
 
 
 
     // Pointer Arithematic
-    printf("Pointer math ---\n");
-    printf("sizeof(roster) ---%ld\n", sizeof(roster));
-    roster *o = org;
-    for (int i = 0; i < 3; ++i,++o) {
-        printroster(*o);
-	printf("\to: %ld\n", o);
-    } 
+    //printf("Pointer math ---\n");
+    //printf("sizeof(roster) ---%ld\n", sizeof(roster));
+    //roster *o = org;
+    //for (int i = 0; i < 3; ++i,++o) {
+    //    printroster(*o);
+	//printf("\to: %ld\n", o);
+    //} 
 
     free(org);
+
+
     // Bit manipulations
+    // Traffic Bits
+    // [0 0 0 0 0 0 0 0] -- ERROR
+    // [0 0 0 0 0 0 0 1] -- Go
+    // [0 0 0 0 0 0 1 0] -- Slow Down
+    // [0 0 0 0 0 1 0 0] -- Stop
+    // [0 0 0 0 1 0 0 0] -- Turn left Go
+    // [0 0 0 1 0 0 0 0] -- Turn left Slow
+    
+    u_int8_t trafficsignal;
+
+    // Set to go
+    //trafficsignal = 1;
+    trafficsignal = 0b00000001; // Go
+    trafficsignal = 0b00000010; // Slow Down
+    
+    const unsigned char T_ERROR = 0b00000000; // -- ERROR
+    const unsigned char T_GO = 0b00000001 ;// -- Go
+    const unsigned char T_SLOW = (1 << 1);// -- Slow Down
+    const unsigned char T_STOP = (1 << 2) ;// -- Stop
+    const unsigned char T_LGO = 0b00001000 ;// -- Turn left Go
+    const unsigned char T_LS = 0b00010000 ;// -- Turn left Slow
+
+    // IS this go? (BAD)
+    if (trafficsignal == T_GO) {
+        printf("Greenlight\n");
+    }
+    else if (trafficsignal == T_LGO) {
+        printf("Left Greenlight\n");
+    }
+
+    // Is this Go? Good
+    trafficsignal = 0b00001001; // Slow Down
+    unsigned char is_go = T_GO | T_LGO;
+    if (trafficsignal == is_go) {
+        printf("Greenlight AND Left Greenlight: %x\n", trafficsignal);
+    }
+
+    // Set a new value?
+    // Make left turn slow down (turn off left turn go, turn on left turn slow down)
+    // Keep go
+    trafficsignal &= (~T_LGO);
+    trafficsignal |= T_LS;
+    printf("Traffic signal %x\n", trafficsignal);
+    printf("T_GO | T_LS  %x\n", T_GO | T_LS);
+    printf("T_GO %x | T_LS %x =   %x\n", T_GO, T_LS, T_GO | T_LS);
+
     return 0;
 }
