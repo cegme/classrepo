@@ -1,5 +1,7 @@
-import re
+
 import mightdelete
+import pytest
+import re
 
 
 def magic():
@@ -33,10 +35,21 @@ def dore(mystring = "My password"):
         # print("Matched!", match.group(1), match.group(2))
         print("Matched!", match.group(1,2))
         print("Matched!", match.group("user_term", "user_password"))
+        return match.group(1,2)
     else:
         # Match is None
         print("No match")
+        return None
 
+
+def test_regex():
+    """ We are testing the dore() function. """
+    result = dore("Okay cool. My password is 12abc34 don't tell anyone.")
+    assert True
+    assert result != ("password", "12abc34")
+
+def test_dummy():
+    assert True
 
 # Dunder = double underscore
 if __name__ == '__main__':
